@@ -6,7 +6,7 @@ const AuthService = {
         if (API_KEYS[key]) {
             return API_KEYS[key];
         } else {
-            throw new NotFoundError();
+            throw new NotFoundError('API key not found');
         }
     },
 };

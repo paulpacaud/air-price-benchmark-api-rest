@@ -8,7 +8,7 @@ const DataService = {
 
         const permissions = API_KEYS[token];
         if (!permissions.onds.includes(ond)) {
-            throw new UnauthorizedError();
+            return new UnauthorizedError();
         }
 
         const config = {
@@ -21,32 +21,21 @@ const DataService = {
         };
 
         const client = new pg.Client(config);
+        await client.connect();
 
-        client.connect(err => {
-            if (err) throw err;
-            else {
-                queryDatabase();
-            }
-        });
-
-        console.log(`Running query to PostgreSQL server: ${config.host}`);
-
-        /*const query = `SELECT main_airline, price_euro
+        try {
+            const query = `SELECT main_airline, price_euro
              FROM search_reco 
-             WHERE ond='${ond}' AND origin_city='${origin}' AND destination_city='${destination}
-             AND main_airline = ANY('{${permissions.airlines}}')`;*/
-        const query = `SELECT main_airline, price_euro
-             FROM search_reco 
-             WHERE ond='${ond}' AND origin_city='${origin}' AND destination_city='${destination}`;
-
-        client.query(query)
-            .then(res => {
-                return res.rows;
-            })
-            .catch(err => {
-                console.log(err);
-                throw err;
-            });
+             WHERE ond='${ond}'`;
+            console.log(query);
+            const res = await client.query(query);
+            return res.rows;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        } finally {
+            await client.end();
+        }
     },
 };
 
