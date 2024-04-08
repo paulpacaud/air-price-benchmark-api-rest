@@ -33,7 +33,6 @@ const DataService = {
             const res = await client.query(query);
             let transformedResults = [];
 
-            // Temporarily hold the data for aggregation
             let tempData = {};
 
             // Iterate over each row of the results
