@@ -6,8 +6,7 @@ const DataController = {
             const result = await DataService.getData(
                 req.headers.authorization.split(' ')[1],
                 req.params.ond,
-                req.params.origin,
-                req.params.destination);
+                req.params.roundtrip);
             res.json({ result });
         } catch (error) {
             next(error);
