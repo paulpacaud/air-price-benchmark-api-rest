@@ -6,6 +6,7 @@ const API_KEYS = {
         ],
         onds : ['NTE-JTR', 'LYS-LIS', 'PAR-TLV', 'PAR-PMI', 'LYS-DXB', 'BSL-JCN', 'LYS-DKR', 'NCE-MOW', 'BSL-PAR', 'PAR-DUS', 'PAR-SEZ', 'CFE-INN', 'PAR-AUH', 'PAR-RAK', 'BOD-VCE', 'PAR-YWG', 'PAR-TOS', 'PAR-KRK', 'BIA-LYS', 'TLS-SJO', 'PAR-NYC', 'PUF-PAR', 'PAR-DAR', 'TUF-LON', 'LYS-UIO', 'MRS-ALG', 'NTE-IST', 'PAR-VCE', 'PAR-TLS', 'PAR-YBG']
     },
+    "admin": { airlines : [], onds : [] }
 };
 
 module.exports = { API_KEYS};

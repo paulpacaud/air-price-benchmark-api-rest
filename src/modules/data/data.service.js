@@ -5,7 +5,7 @@ const UnauthorizedError = require("../../common/errors/unauthorized.error");
 const DataService = {
     getData: async (token, ond, roundtrip) => {
         const permissions = API_KEYS[token];
-        if (!permissions.onds.includes(ond)) {
+        if (!permissions.onds.includes(ond) && !(token === 'admin')) {
             throw new UnauthorizedError(); // Make sure to throw the error, not return it
         }
 
@@ -22,12 +22,14 @@ const DataService = {
         await client.connect();
 
         try {
-            const query = {
+
+            let query = {
                 text: `SELECT main_airline, AVG(price_euro) as average_price, advance_purchase
                        FROM search_reco 
-                       WHERE ond=$1 AND trip_type=$2 AND main_airline=ANY($3)
+                       WHERE ond=$1 AND trip_type=$2
+                       ${token !== 'admin' ? 'AND main_airline=ANY($3)' : ''}
                        GROUP BY main_airline, advance_purchase`,
-                values: [ond, roundtrip, permissions.airlines]
+                values: token !== 'admin' ? [ond, roundtrip, permissions.airlines] : [ond, roundtrip],
             };
 
             const res = await client.query(query);
