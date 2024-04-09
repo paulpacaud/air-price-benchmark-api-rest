@@ -22,13 +22,12 @@ const DataService = {
         await client.connect();
 
         try {
-
             let query = {
-                text: `SELECT main_airline, AVG(price_euro) as average_price, advance_purchase
+                text: `SELECT main_airline, AVG(price_euro) as average_price, advance_purchase, passengers_string
                        FROM search_reco 
                        WHERE ond=$1 AND trip_type=$2
                        ${token !== 'admin' ? 'AND main_airline=ANY($3)' : ''}
-                       GROUP BY main_airline, advance_purchase`,
+                       GROUP BY main_airline, advance_purchase, passengers_string`,
                 values: token !== 'admin' ? [ond, roundtrip, permissions.airlines] : [ond, roundtrip],
             };
 
@@ -47,8 +46,16 @@ const DataService = {
                     };
                 }
 
+                // the column passengers_string has string values like "TIM:2,TIN:2,TIF:1"
+                // we need to extract the number of passengers for each type and sum them to get the number of passagers in the ticket
+                // so that we then can calculate the average price per passenger
+                let passengers = row.passengers_string.split(',').reduce((acc, curr) => {
+                    let [type, count] = curr.split(':');
+                    return acc + parseInt(count);
+                }, 0);
+
                 // Assign or update the average price for the given advance purchase
-                tempData[row.main_airline].advance_purchase_vs_average_price[row.advance_purchase] = row.average_price;
+                tempData[row.main_airline].advance_purchase_vs_average_price[row.advance_purchase] = row.average_price/passengers;
             });
 
             // Convert the aggregated data into the desired array format
